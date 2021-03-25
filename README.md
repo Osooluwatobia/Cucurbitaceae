@@ -1,1 +1,1 @@
-# MorphoLeaf Application for Digital Morphometrics: 2D Visualization and Inter-Specific Shape Analysis of Leaves Using Cucurbitaceae as a Model
+# Digital Morphometrics: Application of MorphoLeaf in Shape Visualization and Species Delimitation, using Cucurbitaceae Leaves as a Model.
