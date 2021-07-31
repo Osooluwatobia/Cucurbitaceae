@@ -30,8 +30,12 @@ library(ggcorrplot)
 
 library(plotly)
 
+
+# Set working directory first
+setwd("C:/Users/company/Desktop/R_Analysis_Cucurbit_Measures")
+
 # Import the Teeth Measures from Excel
-Teeth_Data_NZ <- read_excel("Cucurbit_Morphometrics.xlsx", 
+Teeth_Data_NZ <- read_excel("Cucurbit_Morphometrics.xlsx",
                             sheet = "Teeth_Measures_NZ")
 
 
@@ -41,6 +45,7 @@ View(Teeth_Data_NZ)
 # OPTIONAL - View the file in console - head(insert_filename)
 # OPTIONAL - For data summary in console - summary(insert_filename)
 # OPTIONAL - get column names - colnames(insert_filename)
+
 
 
 # PAIRWISE SCATTERPLOT
@@ -54,7 +59,7 @@ Teeth_PW_Scatterplot = Teeth_Data_NZ %>%
   ggpairs(columns = c("Tooth_Width", "Tooth_Height_altitude",
                       "Tooth_Height_median", "Tooth_Area",
                       "Tooth_Perimeter", "Position_From_Base",
-                      "Position_From_Tip"),
+                      "Position_From_Tip"), 
           aes(color = Species),
           upper = list(continuous = wrap('cor', size = 2.5)),
           lower = list(combo = wrap("facethist", bins = 30)),
@@ -75,7 +80,6 @@ Teeth_PW_Scatterplot2
 
 
 
-
 #PCA
 
 # Use numerical data not categorical data
@@ -90,7 +94,8 @@ MyPC <- prcomp(~Blade_Width_BB+Blade_Width_IS+Blade_Length+Blade_Area+
                  Blade_Perimeter+Tooth_Width+Tooth_Width+
                  Tooth_Height_altitude+Tooth_Height_median+Tooth_Height_Width+
                  Tooth_Area+Tooth_Perimeter+Position_From_Tip+
-                 Position_From_Base, data=Teeth_Data_NZ)
+                 Position_From_Base, data=Teeth_Data_NZ, scale = TRUE)
+
 
 # OPTIONAL - View MyPC  for confirmation
 MyPC
@@ -109,7 +114,6 @@ plot(MyPC, type = "b")
 
 
 
-
 # Plot a CORRELATION PLOT OF ALL VARIABLES VS 3 PCs
 
 My3PCs <- as.data.frame(MyPC$rotation[,1:3])
@@ -121,8 +125,8 @@ My3PCs3_Plot = ggplot(My3PCs3, aes(variable, Leaf)) +
 
 
 # Add title to My3PCs3_Plot and VIEW
-My3PCs3_Plot+labs (title = "CORRELATION OF ALL VARIABLES VS 3 PCs")
-
+My3PCs3_Plot + labs (title = "CORRELATION OF ALL VARIABLES VS 3 PCs") +
+  theme(axis.text = element_text(size=20), axis.title = element_text(size = 20))
 
 
 
@@ -137,14 +141,16 @@ MyPC_Variables = Teeth_Data_NZ[, c("Species", "Blade_Width_BB", "Blade_Width_IS"
 
 MyPC_Variables
 
+
 # Correlation Matrix
 MyPC_Variables_cor<-cor(MyPC_Variables [,-1])
 
 MyPC_Variables_cor
 
 # Plot correlation plot of MyPC_Variables_cor, add title, and VIEW
-ggcorrplot(MyPC_Variables_cor, method = "circle")
-+labs (title = "Correlation Plot of All PC Variables")
+ggcorrplot(MyPC_Variables_cor, method = "circle") + 
+  labs (title = "Correlation Plot of All PC Variables") + 
+  theme(axis.text = element_text(size=20), axis.title = element_text(size = 20))
 
 
 
@@ -159,7 +165,7 @@ ggcorrplot(MyPC_Variables_cor, method = "circle")
 # To interpret PC, use biplot or ggbiplot
 
 # Plot PC1 vs PC2 ggbiplot without aesthetics
-Teeth_biplot_PC1_PC2 =  ggbiplot(pcobj = MyPC, choices = c(1,2),
+Teeth_biplot_PC1_PC2 =  ggbiplot(pcobj = MyPC, scale = TRUE, choices = c(1,2),
                         obs.scale =  1, var.scale = 1,
                         varname.size = 3, varname.abbrev = FALSE,
                         var.axes = TRUE, circle = FALSE,
@@ -171,7 +177,8 @@ Teeth_biplot_PC1_PC2
 # Add title to biplot using labs fxn. Rename it to version 2 of your biplot
 Teeth_biplot_PC1_PC2_2 = Teeth_biplot_PC1_PC2+labs (title = "PCA of Cucurbitaceae leaves data set",
                                subtitle="PC1 vs PC2",
-                               colour = "Species")
+                               colour = "Species") + 
+  theme(legend.position = "bottom")
 
 # View titled biplot
 Teeth_biplot_PC1_PC2_2
@@ -179,12 +186,13 @@ Teeth_biplot_PC1_PC2_2
 
 
 
-# Plot PC1 vs PC2 ggbiplot without aesthetics
-Teeth_biplot_PC3_PC4 =  ggbiplot(pcobj = MyPC, choices = c(3,4),
+# Plot PC3 vs PC4 ggbiplot without aesthetics
+Teeth_biplot_PC3_PC4 =  ggbiplot(pcobj = MyPC, scale = TRUE, choices = c(3,4),
                                  obs.scale =  1, var.scale = 1,
                                  varname.size = 3, varname.abbrev = FALSE,
                                  var.axes = TRUE, circle = FALSE,
-                                 ellipse = TRUE, groups = Teeth_Data_NZ$Species)
+                                 ellipse = TRUE, groups = Teeth_Data_NZ$Species) +
+  theme(legend.position = "bottom")
 
 # View the biplot
 Teeth_biplot_PC3_PC4
@@ -192,7 +200,8 @@ Teeth_biplot_PC3_PC4
 # Add title to biplot using labs fxn. Rename it to version 2 of your biplot
 Teeth_biplot_PC3_PC4_2 = Teeth_biplot_PC3_PC4+labs (title = "PCA of Cucurbitaceae leaves data set",
                                             subtitle="PC3 vs PC4",
-                                            colour = "Species")
+                                            colour = "Species") +
+  theme(legend.position = "bottom")
 
 # View titled biplot
 Teeth_biplot_PC3_PC4_2
@@ -401,10 +410,6 @@ ggplot(Teeth_Data_NZ, aes(x=Blade_Area, y=Tooth_Area,
 install.packages("hclust")
 
 library(hclust)
-
-
-
-
 
 
 
