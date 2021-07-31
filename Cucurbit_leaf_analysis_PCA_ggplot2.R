@@ -20,23 +20,29 @@ library(tidyverse)
 require(ggbiplot)
 
 
+# Set working directory first
+setwd("C:/Users/company/Desktop/R_Analysis_Cucurbit_Measures")
+
+
 # Import the Leaf Measures from Excel
 Cucurbit_Leaf <- read_excel("Cucurbit_Morphometrics.xlsx", 
                                    sheet = "Leaf_Measures")
+
+# OPTIONAL - View the leaves data in window
+View(Cucurbit_Leaf)
+
 
 # Import the Teeth Measures from Excel
 Cucurbit_Teeth <- read_excel("Cucurbit_Morphometrics.xlsx", 
                             sheet = "Teeth_Measures")
 
+# OPTIONAL - View the teeth data in window
+View(Cucurbit_Teeth)
+
+
 # Import the bandWidth Measures from Excel
 Cucurbit_BW <- read_excel("Cucurbit_Morphometrics.xlsx", 
                              sheet = "bandWidth")
-
-# OPTIONAL - View the leaves data in window
-View(Cucurbit_Leaf)
-
-# OPTIONAL - View the teeth data in window
-View(Cucurbit_Teeth)
 
 # View the bandwidth data in window
 View(Cucurbit_BW)
@@ -70,7 +76,7 @@ colnames(Cucurbit_Leaf)
 #                 upper = list(continuous = wrap('cor', size = 8)))
 
 # Pairwise scatterplot matrix with GGally, coloring by species
-Leaf_PW_Scatterplot = Cucurbit_Leaf %>% mutate(Species = factor(Species)) %>%
+Leaf_PW_Scatterplot = Cucurbit_Leaf %>% mutate(Species = factor(Species), scale = TRUE) %>%
   ggpairs(columns = c("Blade_Length", "Blade_Width_BB", 
                       "Blade_Area", "Blade_Perimeter", "Blade_Width_IS"), 
           aes(color = Species),
@@ -92,7 +98,7 @@ Leaf_PW_Scatterplot2
 # PLOT PCA 
 
 # Use numerical data not categorical dat
-# Use cbind or prcomp then run PCA. I use so I can supply scale
+# Use cbind or prcomp then run PCA. I use prcomp so I can supply scale
 # Select working columns or subset data for PCA
 # The filename is the data frame [4:9] represents columns 4 to 9
 # [, -5] or [, -1, -2] represent minus column 5 or minus column 1 and 2
@@ -131,36 +137,43 @@ plot(MyPC, type = "l")
 # It shows how each components and variable agree with each other
 # Scale it to zero to make the axis more interpretable
 
-# ALTERNATIVE Plot biplot - biplot(MyPCA, scale = 0)
+# ALTERNATIVE Plot biplot - biplot(MyPC, scale = 0)
 
 # ALTERNATIVE - Plot ggbiplot without aesthetics - Leaf_bplot <-  ggbiplot(MyPC)
 
-# Plot ggbiplot without aesthetics
+# Plot ggbiplot without aesthetics + title using labs fxn.
 Leaf_bplot =  ggbiplot(pcobj = MyPC, choices = c(1,2),
                         obs.scale =  1, var.scale = 1,
-                        labels = row.names(Cucurbit_Leaf),
-                        varname.size = 3, varname.abbrev = FALSE,
+                        labels = row.names(Cucurbit_Leaf), labels.size = 6,
+                        varname.size = 8, varname.abbrev = TRUE,
                         var.axes = TRUE, circle = TRUE,
                         ellipse = TRUE, groups = Cucurbit_Leaf$Species)
 
 # View the biplot
 Leaf_bplot
 
-# Add title to biplot using labs fxn. Rename it to version 2 of your biplot
+#Add Title 
 Leaf_bplot2 = Leaf_bplot+labs (title = "PCA of Cucurbitaceae leaves data set",
-                               subtitle="PC1 vs PC2",
-                               colour = "Species")
+         subtitle="Space of best fit for each species",
+         colour = "Species") +
+  theme(axis.text = element_text(size=20), axis.title = element_text(size = 20),
+        legend.position = "bottom",legend.key.height = unit(1, 'cm'),
+        legend.key.width = unit(1, 'cm'), legend.title = element_text(size=20),
+        legend.text = element_text(size=20))
 
-# View titled biplot
+# View
 Leaf_bplot2
 
 
-# ALTERNATIVE WAY TO VIEW SCATTERPLOT ON GGPLOT2
+
+
+########IGNORE FROM HERE
+
+# ALTERNATIVE WAY TO VIEW PCA SCATTERPLOT ON GGPLOT2
 # biplot may not the best way to represent or look for patterns in data
 # after the data has been projected onto the new PC. 
 # So, instead, extract PC1 and PC2, attach them to the data frame
 # and plot using ggplot
-
 
 # First examine the structure to see that PCs have values
 # for sdev, rotation, center, scale and x
@@ -206,16 +219,22 @@ Leaf_biplot_alternative = ggplot(Cucurbit_Leaf2, aes(x=PC1, y=PC2, col = Species
 # View Leaf biplot alternative
 Leaf_biplot_alternative
 
+
+########IGNORE TO HERE
+
+
+
+
+
+
 # RUN CORRELTATION COEFFICIENT BETWEEN VARIABLES AND PCS
-# Instead of biplot to interpret relationship between each variables 
-# and PC, statistically, you can look at correlations between
-# the original variables and the PCs to interpret how one PC changes,
-# whether the variables go up or down and by how much
-# it's a pearson correlation coefficient
+# Instead of biplot to interpret relationship between each variables and PC,
+# statistically, you can look at correlations between the original variables
+# and the PCs to interpret how one PC changes, whether the variables go up
+# or down and by how much. It's a pearson correlation coefficient
 
 # Correlation between variables and PCs
 cor(Cucurbit_Leaf2[4:9], Cucurbit_Leaf2[14:19])
-
 
 
 # PLOT CORRELATION MATRIX BETWEEN VARIABLES
@@ -231,13 +250,8 @@ cor(Cucurbit_Leaf2[4:9], Cucurbit_Leaf2[14:19])
 colnames(Cucurbit_Leaf2)
 
 #Length vs Width, Blade perimeter vs PC1
-ggplot(Cucurbit_Leaf2, aes(Blade_Length, Blade_Perimeter,
-                           col=Species, fill=Species)) +
-  geom_smooth(method = lm) +
-  geom_point(shape=21) +
+ggplot(Cucurbit_Leaf2, aes(Blade_Length, Blade_Perimeter, col=Species, fill=Species)) +
+  geom_smooth(method = lm) + geom_point(shape=21) +
   labs(title="Blade Length vs Blade Perimeter") +
   xlab("Blade Length")+
   ylab("Blade Perimeter")
-  
-
-MyPC
